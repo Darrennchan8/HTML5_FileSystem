@@ -1,0 +1,511 @@
+/*Add Roboto Font*/
+	@font-face {
+	  font-family: 'Roboto';
+	  font-style: normal;
+	  font-weight: 400;
+	  src:url('roboto.woff2') format('woff2');
+	  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+	}
+/*Global Variables*/
+	* {
+		/*Disables Highlighting*/
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+		/*Disables Dragging*/
+		-webkit-user-drag: none;
+		-khtml-user-drag: none;
+		-moz-user-drag: none;
+		-o-user-drag: none;
+		user-drag: none;
+	}
+	/*Hides ScrollBar*/
+	::-webkit-scrollbar {
+		display: none;
+	}
+/*Hides Background Data*/
+	.data{
+		display: none;
+		visibility: hidden;
+	}
+/*Body Background and Global Style*/
+	body {
+		background: #eeeded;
+		margin: 0;
+	}
+	.overlay{
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0,0,0,0.5);
+		z-index: 4;
+		text-align:center;
+	}
+/*Defines Card Style*/
+	.wrapperHeaderTitleClickable{
+		display: block;
+		color: white;
+		font-family: 'Roboto',sans-serif;
+		float: left;
+		padding: 17px;
+		padding-left:2%;
+		padding-right:2%;
+		position: relative;
+		z-index: 1;
+		cursor: pointer;
+	}
+	.recommendedContent{
+		position: relative;
+		display: block;
+		vertical-align:middle;
+		width: 100%;
+		height:35px;
+		border-bottom: solid 1px rgba(0,0,0,0.03);
+		cursor: pointer;
+	}
+	.recommendedContentText{
+		position:relative;
+		font-family: 'Roboto',sans-serif;
+		display: block;
+		float: left;
+		margin: 9px;
+		margin-left:4px;
+		font-size: 12px;
+	}
+	.recommendedTitle{
+		position:absolute;
+		font-family: 'Roboto',sans-serif;
+		display: block;
+		float: left;
+		margin: 10px;
+		font-size: 12px;
+	}
+	.recommendedContentAction{
+		position:relative;
+		display: block;
+		float: left;
+		margin: 10px;
+		margin-top:5px;
+		margin-bottom:5px;
+		font-size: 12px;
+	}
+	.recommended {
+		position:relative;
+		height: 32px;
+		width: inherit;
+		border-bottom: solid 1px rgba(0,0,0,0.23);
+		display:block;
+	}
+	.requestCard {
+		display:inline;
+		box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+		height:100px;
+		position:fixed;
+		bottom:0px;
+		background-color:#eeeded;
+		width:250px;
+		z-index:5;
+		margin-left: -150px;
+	}
+	.actionRight {
+		position: relative;
+		display: inline-block;
+		vertical-align:middle;
+		margin-left:5px;
+		margin-right:5px;
+		z-index: 1;
+		cursor: pointer;
+	}
+	.actionLeft {
+		position: static;
+		display: inline-block;
+		vertical-align:middle;
+		margin-left:5px;
+		margin-right:5px;
+		left: 0px;
+		z-index: 1;
+		cursor: pointer;
+	}
+	.tallCard {
+		height: 50px;
+		display: block;
+		vertical-align:middle;
+		cursor: pointer;
+		border-bottom: solid 1px rgba(0,0,0,0.23);
+	}
+	.wrapper {
+		background: #fff;
+		border-radius: 2px;
+		display: block;
+		float: left;
+		margin: 1%;
+		width: 98%;
+		position: relative;
+		box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+		transition: all 0.2s ease-in-out;
+		z-index: 1;
+	}
+	.fullWrapper {
+		background: #fff;
+		border-radius: 2px;
+		display: block;
+		float: left;
+		width: 100%;
+		position: relative;
+		z-index: 1;
+	}
+	.wrapperHeader {
+		background: #00BCD4;
+		float: left;
+		box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+		transition: all 0.2s ease-in-out;
+		width: 100%;
+		margin-bottom: 1%;
+		top: 0px;
+	}
+	.wrapperHeaderTitle {
+		display: inline-block;
+		color: white;
+		font-family: 'Roboto',sans-serif;
+		float: left;
+		margin: 0%;
+		padding-top:17px;
+		padding-bottom:17px;
+		position: relative;
+		z-index: 1;
+		cursor: default;
+	}
+	.wrapperHeaderShuffle {
+		display: block;
+		color: white;
+		font-family: 'Roboto',sans-serif;
+		margin: 1%;
+		position: absolute;
+		right: 0px;
+		z-index: 1;
+		cursor: pointer;
+	}
+	.longCard {
+		border-bottom: solid 1px rgba(0,0,0,0.23);
+	}
+/*Card Hover Style*/
+	.wrapper:hover {
+		box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+	}
+/*Card Internal Text*/
+	.cardText {
+		white-space: nowrap;
+		text-overflow:ellipsis;
+		display:inline-block;
+		position:static;
+		cursor: pointer;
+		margin-left:5px;
+		margin-right:5px;
+		font-family: 'Roboto', sans-serif;
+	}
+/*Actual Card Styles*/
+	.fullCard {
+		padding-bottom:37%;
+	}
+/*Header Ribbon and Contents*/
+	header{
+		top: 0px;
+		background: #FF5722;
+		float: left;
+		box-shadow: 0 3px 6px rgba(0,0,0,0.08), 0 3px 6px rgba(0,0,0,0.12);
+		transition: all 0.2s ease-in-out;
+		width: 100%;
+		position: fixed;
+		z-index: 2;
+	}
+	.headerTitle {
+		display: block;
+		color: white;
+		font-family: 'Roboto',sans-serif;
+		font-size: 120%;
+		float: left;
+		margin: 1%;
+		position: relative;
+		z-index: 1;
+		cursor: default;
+	}
+	.headerShuffle {
+		display: block;
+		color: white;
+		font-family: 'Roboto',sans-serif;
+		font-size: 120%;
+		right: 0px;
+		margin: 1%;
+		position: absolute;
+		z-index: 1;
+		cursor: pointer;
+	}
+/*Placeholders and Error Messages*/
+	h1 {
+		font-size: 125%;
+		visibility: hidden;
+	}
+	.alertCard {
+		display:block;
+		box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+		height:100px;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background-color:#eeeded;
+		width:250px;
+		z-index:5;
+		cursor:default;
+	}
+	.alertCard p{
+		font-family:'Roboto',sans-serif;
+		margin:0px;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+/*Footer Ribbon*/
+	footer{
+		bottom: 0px;
+		background: #FF5722;
+		width: 100%;
+		position: fixed;
+		z-index: 3;
+	}
+	.footerAction {
+		display: inline-block;
+		color: white;
+		font-family: 'Roboto',sans-serif;
+		font-size: 120%;
+		right: 0px;
+		margin: 1%;
+		position: absolute;
+		z-index: 1;
+		cursor: pointer;
+	}
+	.songTitle {
+		display: inline-block;
+		color: white;
+		font-family: 'Roboto',sans-serif;
+		font-size: 120%;
+		margin: 1%;
+		vertical-align: center;
+		cursor: default;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+/*Media Progress Bar*/
+	progress[value] {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 100%;
+		height: .5%;
+		position: fixed;
+	}
+	progress[value]::-webkit-progress-bar{
+		background-color: #FF5722;
+	}
+	progress[value]::-webkit-progress-value {
+		background-color: #00BCD4;
+	}
+/*Media Controls*/
+	.fab {
+		display:block;
+		z-index:4;
+		position:fixed;
+		right:23px;
+		bottom:12px;
+		height:56px;
+		width:56px;
+		cursor:pointer;
+		moz-border-radius: 50px;
+		webkit-border-radius: 50px;
+		border-radius: 50px;
+		text-align:center;
+		vertical-align: middle;
+	}
+	.smallFab {
+		display:block;
+		z-index:4;
+		position:fixed;
+		height:40px;
+		width:40px;
+		cursor:pointer;
+		moz-border-radius: 50px;
+		webkit-border-radius: 50px;
+		border-radius: 50px;
+		text-align:center;
+		vertical-align: middle;
+	}
+	.play {
+		vertical-align: bottom;
+		content:url("../res/play.svg");
+		height: 50px;
+		width: 50px;
+		cursor: pointer;
+		display: inline-block;
+		margin: 1%;
+		margin-bottom: .5%;
+		margin-right: 0px;
+		margin-left: 0px;
+	}
+	.pause {
+		vertical-align: bottom;
+		content:url("../res/pause.svg");
+		height: 50px;
+		width: 50px;
+		cursor: pointer;
+		display: inline-block;
+		margin: 1%;
+		margin-bottom: .5%;
+		margin-right: 0px;
+		margin-left: 0px;
+	}
+	.skipNext {
+		vertical-align: bottom;
+		content:url("../res/skipNext.svg");
+		height: 30px;
+		width: 30px;
+		cursor: pointer;
+		display: inline-block;
+		margin: 18px;
+		margin-left: 0px;
+	}
+	.skipPrevious {
+		vertical-align: bottom;
+		content:url("../res/skipBackwards.svg");
+		height: 30px;
+		width: 30px;
+		cursor: pointer;
+		display: inline-block;
+		margin: 18px;
+		margin-right: 0px;
+	}
+/*Video Player Style*/
+	#videoContainer {
+		height: 100%;
+		width: 100%;
+	}
+	.smallVideo {
+		z-index:2;
+		position:fixed;
+		bottom:70px;
+		right:85px;
+		width:256px;
+		height:144px;
+	}
+	.fullVideo {
+		z-index:3;
+		position:fixed;
+		bottom:0px;
+		right:0px;
+		width:100%;
+		height:100%;
+	}
+/*Spinner*/
+.spinner {
+  -webkit-animation: rotator 1.4s linear infinite;
+          animation: rotator 1.4s linear infinite;
+}
+
+@-webkit-keyframes rotator {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(270deg);
+            transform: rotate(270deg);
+  }
+}
+
+@keyframes rotator {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(270deg);
+            transform: rotate(270deg);
+  }
+}
+.path {
+  stroke-dasharray: 187;
+  stroke-dashoffset: 0;
+  -webkit-transform-origin: center;
+          transform-origin: center;
+  -webkit-animation: dash 1.4s ease-in-out infinite, colors 5.6s ease-in-out infinite;
+          animation: dash 1.4s ease-in-out infinite, colors 5.6s ease-in-out infinite;
+}
+
+@-webkit-keyframes colors {
+  0% {
+    stroke: #4285F4;
+  }
+  25% {
+    stroke: #DE3E35;
+  }
+  50% {
+    stroke: #F7C223;
+  }
+  75% {
+    stroke: #1B9A59;
+  }
+  100% {
+    stroke: #4285F4;
+  }
+}
+
+@keyframes colors {
+  0% {
+    stroke: #4285F4;
+  }
+  25% {
+    stroke: #DE3E35;
+  }
+  50% {
+    stroke: #F7C223;
+  }
+  75% {
+    stroke: #1B9A59;
+  }
+  100% {
+    stroke: #4285F4;
+  }
+}
+@-webkit-keyframes dash {
+  0% {
+    stroke-dashoffset: 187;
+  }
+  50% {
+    stroke-dashoffset: 46.75;
+    -webkit-transform: rotate(135deg);
+            transform: rotate(135deg);
+  }
+  100% {
+    stroke-dashoffset: 187;
+    -webkit-transform: rotate(450deg);
+            transform: rotate(450deg);
+  }
+}
+@keyframes dash {
+  0% {
+    stroke-dashoffset: 187;
+  }
+  50% {
+    stroke-dashoffset: 46.75;
+    -webkit-transform: rotate(135deg);
+            transform: rotate(135deg);
+  }
+  100% {
+    stroke-dashoffset: 187;
+    -webkit-transform: rotate(450deg);
+            transform: rotate(450deg);
+  }
+}
