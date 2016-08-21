@@ -1,0 +1,21 @@
+{
+	"name":"Home",
+	"activities":{
+		"main": {
+			"ico":"/res/favicon.ico",
+			"path":"/index.html"
+		},
+		"home": {
+			"name":"Home",
+			"ico":"/res/favicon.ico",
+			"path":"/index.html"
+		}
+	},
+	"permissions":[
+		"STARTUP",
+		"LIST_PACKAGES",
+		"LAUNCH_PACKAGES",
+		"PERSISTENT_HAMBURGER",
+		"DEFAULT_HOME"
+	]
+}
