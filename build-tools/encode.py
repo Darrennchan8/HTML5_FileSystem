@@ -6,7 +6,7 @@ import os
 import json
 import base64
 
-PATH = "/xampp/htdocs/HTML5_FileSystem/app"
+PATH = "/xampp/htdocs/HTML5_FileSystem/resources"
 OUTPUT_PATH = "/xampp/htdocs/HTML5_FileSystem/public/resources.json"
 POST_PATH = "/"
 FILES = {}
