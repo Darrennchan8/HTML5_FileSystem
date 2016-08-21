@@ -1,0 +1,2 @@
+The current linter used for this project is jscs, with the preset 'google'.
+This can be enabled with the command line flag --preset=google.
