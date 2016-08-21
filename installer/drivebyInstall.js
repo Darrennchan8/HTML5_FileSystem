@@ -23,7 +23,7 @@
 
   if (DEVBUILD) {
     var exclusions = [];
-    var dataPath = '../../public/resources.json';
+    var dataPath = '../public/resources.json';
   } else {
     var exclusions = ['data','storage'];
     var dataPath = 'https://updater-162a0.firebaseapp.com/resources.json';
