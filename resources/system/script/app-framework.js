@@ -148,15 +148,20 @@ loadingScreen.setMessage('Parsing File...');
         });
       },
       upload: function(callback) {
-        fs.new({
+        fs.delete({
           type: 'file',
-          path: '/data/',
-          name: 'config.json',
-          data: JSON.stringify(model.settings.config),
-          callback: callback
+          path: '/data/config.json',
+          callback: function() {
+            fs.new({
+              type: 'file',
+              path: '/data/',
+              name: 'config.json',
+              data: JSON.stringify(model.settings.config),
+              callback: callback.bind(this)
+            });
+          }.bind(this)
         });
-      },
-      config: {}
+      }
     },
     permissions: {}
   };
@@ -244,15 +249,19 @@ loadingScreen.setMessage('Parsing File...');
       }
     },
     activityMatch: function(activity, callback) {
-      var status = true;
+      var status = false;
       var localPermissions = model.permissions;
       var savedPermissions = model.settings.config.permissions;
-      console.log(localPermissions, savedPermissions);
-      if (localPermissions[activity] != savedPermissions[activity]) {
+      var compare = function(obj1, obj2, activity) {
+        obj1 = JSON.stringify(obj1[activity]);
+        obj2 = JSON.stringify(obj2[activity]);
+        return obj1 != obj2;
+      };
+      if (compare(localPermissions, savedPermissions, activity)) {
         if (localPermissions[activity].length === 1) {
           savedPermissions[activity] = localPermissions[activity];
         } else {
-          status = false;
+          status = true;
         }
       }
       model.settings.upload(callback.bind(this, status));
@@ -361,12 +370,12 @@ loadingScreen.setMessage('Parsing File...');
         }
       },
       add: function(options) {
-        console.log(options);
+        console.log('ADD HAMBURGER: ', options);
       }
     },
     requestActivity: function(activityName, options) {
       controller.activityMatch(activityName, function(result) {
-        /*Display dialogue if only done once, forced, or never done before*/
+        /*Display dialogue only when necessary*/
         if (options.exclusive || result) {
           console.log(activityName, options);
         }

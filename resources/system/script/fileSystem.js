@@ -38,9 +38,7 @@ loadingScreen.setPercentage(25);
   };
   window.fs = {
     delete: function(details) {
-      if (typeof(details.callback) != 'function') {
-        details.callback = function() {};
-      }
+      details.callback = details.callback || function() {};
       details.path = details.path;
       if (details.type == 'folder') {
         root.getDirectory(details.path, {create: false}, function(dir) {
@@ -62,9 +60,7 @@ loadingScreen.setPercentage(25);
           function(file) {
             file.remove(function() {
               fsLog('fs.delete: File deleted.');
-              if (typeof(details.callback == 'function')) {
-                details.callback(true);
-              }
+              details.callback(true);
             }, function(err) {
               fsError('fs.delete: File cannot be deleted.', err);
             });
