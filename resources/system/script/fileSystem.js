@@ -285,6 +285,79 @@ loadingScreen.setPercentage(25);
         });
       }
     },
+    contents: function(pathDetails) {
+      var callback = pathDetails.callback;
+      var path = (pathDetails.origin + pathDetails.path).split('/');
+      var trustLevel = 0;
+      var isTrusted = true;
+      var finalDir = '';
+      var finalFile;
+      for (let i = 0, ii = path.length; i != ii; i++) {
+        let subpath = path[i].split('\\');
+        subpath.unshift(path);
+        subpath.unshift(i);
+        subpath.unshift(1);
+        path.splice.apply(subpath);
+        i += subpath.length - 4;
+      }
+      for (let i = 0, ii = path.length; i != ii; i++) {
+        if (i < ii - 1) {
+          finalDir += path[i];
+        } else {
+          finalFile = path[i];
+        }
+        if (path[i] == '..') {
+          if (trustLevel--) {
+            isTrusted = false;
+          }
+        } else if (path[i] !== '' && path[i] !== '.') {
+          trustLevel++;
+        }
+      }
+      if (isTrusted) {
+        let handler = function(workingDirectory) {
+          workingDirectory.getFile(finalFile, {create: false},
+          function(fileEntry) {
+            fileEntry.file(function(file) {
+              var reader = new FileReader();
+              reader.addEventListener('loadend', function(callback, e) {
+                callback(e.target.result);
+              }.bind(this, callback));
+              reader.readAsText(file);
+            }.bind(this));
+          }.bind(this), function(err) {
+            fsError('Unable to access file ' + finalFile, err);
+          }.bind(this));
+        };
+        if (finalDir === '') {
+          handler(root);
+        } else {
+          root.getDirectory(finalDir, {create: false}, handler.bind(this),
+          function(err) {
+            fsError('Unable to open directory ' + finalDir, err);
+          }.bind(this));
+        }
+      } else {
+        let e = 'Security Exception: Not allowed to access files outside of ';
+        e += pathDetails.origin + '. Incident Reported.';
+        let startPos = pathDetails.origin.indexOf('/');
+        let endPos = pathDetails.origin.lastIndexOf('/');
+        let appType = pathDetails.origin.substring(startPos, endPos);
+        let appName = pathDetails.origin.substring(endPos, pathDetails.length);
+        let report = appType + 'app ' + appName;
+        report += ' tried to access ' + pathDetails.path;
+        fs.fsError(report);
+        let err = new URIError(errMsg);
+        pathDetails.callback(err);
+      }
+      /*
+        {
+          origin: "/system/LimitedFrame",
+          path: "insecure, unproceesed given path",
+          callback: function(){}
+        }
+      */
+    },
     path: function(fileDetails) {
       if (!fileDetails) {
         throw new Error('missing code');
@@ -313,6 +386,9 @@ loadingScreen.setPercentage(25);
           path: '/tmp/' + randName
         }))
       });
+      fs.exists({
+        type: 'file'
+      });
     }
   };
   navigator.webkitPersistentStorage.requestQuota(10 * 1024 * 1024 * 1024,
@@ -332,3 +408,6 @@ loadingScreen.setPercentage(25);
   loadingScreen.setMessage('File Parsed!');
   loadingScreen.setPercentage(50);
 })();
+/*
+fs.getResource()
+*/

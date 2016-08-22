@@ -1,185 +1,12 @@
 loadingScreen.setMessage('Parsing File...');
 (function() {
   'use strict';
-  var model;
-  var view;
-  var controller;
-  model = {
+
+  var model = {
     init: function() {
       loadingScreen.setPercentage(4);
       loadingScreen.setMessage('Initializing Model...');
       this.installationType = 'persistent';
-      this.style = `
-        body {
-          background: #eeeded;
-          margin: 0;
-        }
-        @font-face {
-          font-family: 'Roboto';
-          font-style: normal;
-          font-weight: 400;
-          src:url('../fonts/roboto.woff2') format('woff2');
-          unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
-        }
-        @font-face {
-          font-family: 'Roboto';
-          font-style: normal;
-          font-weight: 400;
-          src: local('Roboto'), local('Roboto-Regular'), url(https://fonts.gstatic.com/s/roboto/v15/CWB0XYA8bzo0kSThX0UTuA.woff2) format('woff2');
-          unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
-        }
-        * {
-          /*Disables Highlighting*/
-          -webkit-touch-callout: none;
-          -webkit-user-select: none;
-          -moz-user-select: none;
-          -ms-user-select: none;
-          user-select: none;
-          /*Disables Dragging*/
-          -webkit-user-drag: none;
-          -khtml-user-drag: none;
-          -moz-user-drag: none;
-          -o-user-drag: none;
-          font-family: 'Roboto', sans-serif;
-        }
-        ::-webkit-scrollbar {
-          display: none;
-        }
-        .header {
-          position: absolute;
-          display: flex;
-          top: 0;
-          box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-          width: 100%;
-          background-color: #00BCD4;
-          height: 6vmax;
-          max-height: 6vmax;
-          overflow-x: scroll;
-          z-index: 3;
-        }
-        .header p.clickable {
-          cursor: pointer;
-          margin-left: 1vmax;
-          margin-right: 1vmax;
-        }
-        .header p {
-          cursor: default;
-          color: white;
-          font-size: xx-large;
-          margin: 0;
-          margin-top: auto;
-          margin-bottom: auto;
-        }
-        .appFrame {
-          margin-top: 6vmax;
-        }
-        .hamburgerIco {
-          padding: 1.76vmax;
-          cursor: pointer;
-          transition: transform .2s ease-out;
-        }
-        .hamburgerIco::active {
-        }
-        .hamburgerIco::before {
-          content:'';
-          border-radius: 1.6vmax;
-          width: 2.8vmax;
-          height: .4vmax;
-          background-color: white;
-          display: block;
-          transition: width .2s ease-out, border-radius .2s, transform .2s ease-out;
-        }
-        .hamburgerIco span {
-          border-radius: 1.6vmax;
-          margin-top: .64vmax;
-          margin-bottom: .64vmax;
-          width: 2.8vmax;
-          height: .4vmax;
-          background-color: white;
-          display: block;
-          transition: border-radius .2s;
-        }
-        .hamburgerIco::after {
-          content:'';
-          border-radius: 1.6vmax;
-          width: 2.8vmax;
-          height: .4vmax;
-          background-color: white;
-          display: block;
-          transition: width .2s ease-out, border-radius .2s, transform .2s ease-out;
-        }
-        .hamburgerIco.back::before {
-          border-radius:0;
-          transform-origin: bottom right;
-          transform: translateX(1.5vmax) translateY(1.1vmax) rotate(45deg);
-          width: 1.4vmax;
-        }
-        .hamburgerIco.back span {
-          border-radius:0;
-        }
-        .hamburgerIco.back {
-          transform: rotate(180deg);
-        }
-        .hamburgerIco.back::after {
-          border-radius:0;
-          transform-origin: top right;
-          transform: translateX(1.5vmax) translateY(-1.1vmax) rotate(-45deg);
-          width: 1.4vmax;
-        }
-        .hamburgerMenu {
-          cursor: default;
-          height: 100%;
-          padding-top: 6vmax;
-          width: 35vmax;
-          max-width: 35vmax;
-          background-color: #eeeded;
-          margin: 0;
-          position: fixed;
-          z-index: 2;
-          box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-          -webkit-transition: left .35s ease-out;
-          transition: left .35s ease-out;
-          overflow-x: scroll;
-        }
-        .menuOpened {
-          left: 0vmax;
-        }
-        .menuClosed {
-          left: -35vmax;
-        }
-        .overlay {
-          left: 0;
-          top: 0;
-          z-index: 1;
-          position: fixed;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(0, 0, 0, .6);
-          -webkit-transition: opacity .15s ease-out;
-          transition: opacity .15s ease-out;
-        }
-        .o_deactivated {
-          opacity: 0;
-        }
-        .o_activated {
-          display: block;
-          opacity: 1;
-        }
-        .iframeContainer {
-          width: 100%;
-          height: 100%;
-          margin: 0;
-          top: 0;
-          left: 0;
-          position: fixed;
-          overflow: hidden;
-          padding-top: 6vmax;
-        }
-        .iframeContainer * {
-          width: 100%;
-          height: 100%;
-        }
-      `;
       this.base = location.protocol;
       this.base += location.origin;
       this.base += '/' + this.installationType + '/';
@@ -307,10 +134,34 @@ loadingScreen.setMessage('Parsing File...');
         }.bind(this, ii, i));
         xhr[i].send();
       }
-    }
+    },
+    settings: {
+      load: function(callback) {
+        fs.contents({
+          origin: '/data/',
+          path: 'config.json',
+          callback: function(callback, data) {
+            data = JSON.parse(data);
+            model.settings.config = data;
+            callback();
+          }.bind(this, callback)
+        });
+      },
+      upload: function(callback) {
+        fs.new({
+          type: 'file',
+          path: '/data/',
+          name: 'config.json',
+          data: JSON.stringify(model.settings.config),
+          callback: callback
+        });
+      },
+      config: {}
+    },
+    permissions: {}
   };
 
-  controller = {
+  var controller = {
     init: function() {
       loadingScreen.setPercentage(2);
       loadingScreen.setMessage('Initializing Controller...');
@@ -319,10 +170,9 @@ loadingScreen.setMessage('Parsing File...');
       window.allowedMethods = {};
       Object.assign(window.allowedMethods, model.getAllowedMethods());
       Object.freeze(window.allowedMethods);
-      this.loadApps();
-    },
-    getStyle: function() {
-      return model.style;
+      model.settings.load(function() {
+        this.loadApps();
+      }.bind(this));
     },
     tmpFile: function(data, callback) {
       fs.tmpFile(data, callback);
@@ -342,50 +192,85 @@ loadingScreen.setMessage('Parsing File...');
     open: function(packageName, activity) {
     },
     loadApps: function() {
+      /*Runs after all styles are loaded and configuration data is loaded*/
       if (this.loaded) {
         loadingScreen.setPercentage(13);
-        loadingScreen.setMessage('Queueing System Apps...');
+        loadingScreen.setMessage('Querying Apps...');
         model.getApps(function(apps) {
           loadingScreen.setPercentage(20);
-          loadingScreen.setMessage('Processing Packages...');
-          var invokeStartup = function(i) {
-            if (i != apps.length) {
-              controller.startupManager(apps[i], function() {
-                invokeStartup(++i);
-              }.bind(this));
-            } else {
-              console.warn('Startups done');
+          loadingScreen.setMessage('Processing Permissions...');
+          var allPermissions = {
+            'DEFAULT_HOME': function(app) {
+              try {
+                var appConfig = {
+                  activity: app.manifest.activities.home,
+                  path: app.path,
+                  type: app.type
+                };
+                if (!model.permissions.DEFAULT_HOME) {
+                  model.permissions.DEFAULT_HOME = [];
+                }
+                model.permissions.DEFAULT_HOME.push(appConfig);
+              } catch (err) {
+                console.error('Invalid home configuration.', err);
+              }
             }
           };
-          invokeStartup(0);
-        }.bind(this));
+          for (let i = 0, ii = apps.length; i != ii; i++) {
+            try {
+              view.hamburgerMenu.add({
+                title: apps[i].manifest.name
+              });
+              let iindex = apps[i].manifest.permissions.length;
+              for (let index = 0; index != iindex; index++) {
+                if (allPermissions[apps[i].manifest.permissions[index]]) {
+                  allPermissions[apps[i].manifest.permissions[index]](apps[i]);
+                } else {
+                  console.warn('Unrecognized or unneccessary permission: ',
+                    apps[i].manifest.permissions[index]);
+                }
+              }
+            } catch (err) {
+              console.error('Invalid Manifest Configuration.',
+                'No activities will be added.', err);
+            }
+          }
+          view.requestActivity('DEFAULT_HOME', {
+            exclusive: false
+          });
+        });
       } else {
         this.loaded = true;
       }
     },
-    startupManager: function(appDetails, callback) {
-      console.warn(appDetails);
-      callback();
-    },
-    requestChooser: function(activity) {
+    activityMatch: function(activity, callback) {
+      var status = true;
+      var localPermissions = model.permissions;
+      var savedPermissions = model.settings.config.permissions;
+      console.log(localPermissions, savedPermissions);
+      if (localPermissions[activity] != savedPermissions[activity]) {
+        if (localPermissions[activity].length === 1) {
+          savedPermissions[activity] = localPermissions[activity];
+        } else {
+          status = false;
+        }
+      }
+      model.settings.upload(callback.bind(this, status));
     }
   };
 
-  view = {
+  var view = {
     setStyle: function() {
-      var style = controller.getStyle();
-      controller.tmpFile(style, function(CSS_URL) {
-        var CSSElem = document.createElement('link');
-        CSSElem.type = 'text/css';
-        CSSElem.rel = 'stylesheet';
-        CSSElem.href = CSS_URL;
-        CSSElem.addEventListener('load', function() {
-          loadingScreen.setPercentage(10);
-          loadingScreen.setMessage('Styles Loaded!');
-          controller.loadApps();
-        });
-        document.head.appendChild(CSSElem);
+      var CSSElem = document.createElement('link');
+      CSSElem.type = 'text/css';
+      CSSElem.rel = 'stylesheet';
+      CSSElem.href = 'system/res/styles/framework.css';
+      CSSElem.addEventListener('load', function() {
+        loadingScreen.setPercentage(10);
+        loadingScreen.setMessage('Styles Loaded!');
+        controller.loadApps();
       });
+      document.head.appendChild(CSSElem);
     },
     init: function() {
       loadingScreen.setPercentage(8);
@@ -474,8 +359,20 @@ loadingScreen.setMessage('Parsing File...');
           view.overlay.style.display = 'block';
           view.overlay.className = 'overlay o_activated';
         }
+      },
+      add: function(options) {
+        console.log(options);
       }
+    },
+    requestActivity: function(activityName, options) {
+      controller.activityMatch(activityName, function(result) {
+        /*Display dialogue if only done once, forced, or never done before*/
+        if (options.exclusive || result) {
+          console.log(activityName, options);
+        }
+      }.bind(this));
     }
   };
+
   controller.init();
 })();
