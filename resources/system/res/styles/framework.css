@@ -131,6 +131,45 @@ body {
   transition: left .35s ease-out;
   overflow-x: scroll;
 }
+.hamburgerItem {
+  cursor: pointer;
+  height: 5vh;
+  max-height: 5vh;
+  overflow: hidden;
+  vertical-align: middle;
+  display: flex;
+  margin: 0;
+  padding: 2vmax;
+  padding-top: 1vmax;
+  padding-bottom: 1vmax;
+  border-radius: 0vmax;
+  font-weight: bold;
+  color: rgba(0,0,0,.35);
+  -webkit-transition: padding .1s linear, margin .1s linear, border-radius .1s ease-in-out .1s, background-color .1s ease-in-out, color .1s ease-in-out;
+}
+.hamburgerItem img {
+  margin-top: auto;
+  margin-left: 2vw;
+  margin-bottom: auto;
+}
+.hamburgerItem p {
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: 2vw;
+  font-size: 1.5vmax;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.hamburgerItem.active {
+  background-color: rgba(0,0,0,.03);
+  color: rgba(0,0,0,.9);
+  padding: 0;
+  margin: 2vmax;
+  margin-top: 1vmax;
+  margin-bottom: 1vmax;
+  border-radius: 1vmax;
+}
 .menuOpened {
   left: 0vmax;
 }

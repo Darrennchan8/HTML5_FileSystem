@@ -176,7 +176,7 @@ loadingScreen.setMessage('Parsing File...');
       Object.assign(window.allowedMethods, model.getAllowedMethods());
       Object.freeze(window.allowedMethods);
       model.settings.load(function() {
-        this.loadApps();
+        this.apps.init();
       }.bind(this));
     },
     tmpFile: function(data, callback) {
@@ -196,57 +196,63 @@ loadingScreen.setMessage('Parsing File...');
     },
     open: function(packageName, activity) {
     },
-    loadApps: function() {
-      /*Runs after all styles are loaded and configuration data is loaded*/
-      if (this.loaded) {
-        loadingScreen.setPercentage(13);
-        loadingScreen.setMessage('Querying Apps...');
-        model.getApps(function(apps) {
-          loadingScreen.setPercentage(20);
-          loadingScreen.setMessage('Processing Permissions...');
-          var allPermissions = {
-            'DEFAULT_HOME': function(app) {
+    apps: {
+      init: function() {
+        /*Runs after all styles are loaded and configuration data is loaded*/
+        if (this.loaded) {
+          loadingScreen.setPercentage(13);
+          loadingScreen.setMessage('Querying Apps...');
+          model.getApps(function(apps) {
+            loadingScreen.setPercentage(20);
+            loadingScreen.setMessage('Processing Permissions...');
+            var allPermissions = {
+              'DEFAULT_HOME': function(app) {
+                try {
+                  var appConfig = {
+                    activity: app.manifest.activities.home,
+                    path: app.path,
+                    type: app.type
+                  };
+                  if (!model.permissions.DEFAULT_HOME) {
+                    model.permissions.DEFAULT_HOME = [];
+                  }
+                  model.permissions.DEFAULT_HOME.push(appConfig);
+                } catch (err) {
+                  console.error('Invalid home configuration.', err);
+                }
+              }
+            };
+            for (let i = 0, ii = apps.length; i != ii; i++) {
               try {
-                var appConfig = {
-                  activity: app.manifest.activities.home,
-                  path: app.path,
-                  type: app.type
-                };
-                if (!model.permissions.DEFAULT_HOME) {
-                  model.permissions.DEFAULT_HOME = [];
-                }
-                model.permissions.DEFAULT_HOME.push(appConfig);
-              } catch (err) {
-                console.error('Invalid home configuration.', err);
-              }
-            }
-          };
-          for (let i = 0, ii = apps.length; i != ii; i++) {
-            try {
-              view.hamburgerMenu.add({
-                title: apps[i].manifest.name
-              });
-              let iindex = apps[i].manifest.permissions.length;
-              for (let index = 0; index != iindex; index++) {
-                if (allPermissions[apps[i].manifest.permissions[index]]) {
-                  allPermissions[apps[i].manifest.permissions[index]](apps[i]);
+                if (apps[i].manifest.activities.main) {
+                  view.hamburgerMenu.add(apps[i]);
                 } else {
-                  console.warn('Unrecognized or unneccessary permission: ',
-                    apps[i].manifest.permissions[index]);
+                  console.warn('Missing Main activity');
                 }
+                let iindex = apps[i].manifest.permissions.length;
+                for (let index = 0; index != iindex; index++) {
+                  let permissionName = apps[i].manifest.permissions[index];
+                  if (allPermissions[permissionName]) {
+                    allPermissions[permissionName](apps[i]);
+                  } else {
+                    console.warn('Unrecognized or unneccessary permission: ',
+                      permissionName);
+                  }
+                }
+              } catch (err) {
+                console.error('Invalid Manifest Configuration.',
+                  'No activities will be added.', err);
               }
-            } catch (err) {
-              console.error('Invalid Manifest Configuration.',
-                'No activities will be added.', err);
             }
-          }
-          view.requestActivity('DEFAULT_HOME', {
-            exclusive: false
+            model.apps = apps;
+            view.requestActivity('DEFAULT_HOME', {
+              exclusive: false
+            });
           });
-        });
-      } else {
-        this.loaded = true;
-      }
+        } else {
+          this.loaded = true;
+        }
+      },
     },
     activityMatch: function(activity, callback) {
       var status = false;
@@ -277,7 +283,7 @@ loadingScreen.setMessage('Parsing File...');
       CSSElem.addEventListener('load', function() {
         loadingScreen.setPercentage(10);
         loadingScreen.setMessage('Styles Loaded!');
-        controller.loadApps();
+        controller.apps.init();
       });
       document.head.appendChild(CSSElem);
     },
@@ -371,6 +377,20 @@ loadingScreen.setMessage('Parsing File...');
       },
       add: function(options) {
         console.log('ADD HAMBURGER: ', options);
+        var item = document.createElement('div');
+        item.className = 'hamburgerItem';
+        var itemIco = document.createElement('img');
+        itemIco.src = options.path + options.manifest.activities.main.ico;
+        item.appendChild(itemIco);
+        var itemTitle = document.createElement('p');
+        itemTitle.innerText = options.manifest.name;
+        item.appendChild(itemTitle);
+        options.menuEntry = item;
+        item.addEventListener('click', function(appDetails) {
+          controller.activate(appDetails);
+          appDetails.menuEntry.className = 'hamburgerItem active';
+        }.bind(this, options));
+        view.hamburgerMenu.menu.appendChild(item);
       }
     },
     requestActivity: function(activityName, options) {
