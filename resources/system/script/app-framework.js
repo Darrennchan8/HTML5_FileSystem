@@ -1,10 +1,13 @@
 loadingScreen.setMessage('Parsing File...');
 (function() {
   'use strict';
+  var model;
+  var view;
+  var controller;
 
-  var model = {
+  model = {
     init: function() {
-      loadingScreen.setPercentage(4);
+      loadingScreen.setPercentage(6);
       loadingScreen.setMessage('Initializing Model...');
       this.installationType = 'persistent';
       this.base = location.protocol;
@@ -26,7 +29,7 @@ loadingScreen.setMessage('Parsing File...');
           setTitle: null
         }
       };
-      loadingScreen.setPercentage(6);
+      loadingScreen.setPercentage(9);
       loadingScreen.setMessage('Model Initialized!');
     },
     getIco: function(ico) {
@@ -162,9 +165,9 @@ loadingScreen.setMessage('Parsing File...');
     permissions: {}
   };
 
-  var controller = {
+  controller = {
     init: function() {
-      loadingScreen.setPercentage(2);
+      loadingScreen.setPercentage(6);
       loadingScreen.setMessage('Initializing Controller...');
       model.init();
       view.init();
@@ -194,15 +197,16 @@ loadingScreen.setMessage('Parsing File...');
       init: function() {
         /*Runs after all styles are loaded and configuration data is loaded*/
         if (this.loaded) {
-          loadingScreen.setPercentage(13);
+          loadingScreen.setPercentage(26);
           loadingScreen.setMessage('Querying Apps...');
           model.apps.getAll(function(apps) {
-            loadingScreen.setPercentage(20);
-            loadingScreen.setMessage('Processing Permissions...');
+            loadingScreen.setPercentage(60);
+            loadingScreen.setMessage('Initializing Apps...');
             var allPermissions = {
               'DEFAULT_HOME': function(app) {
                 try {
                   var appConfig = {
+                    manifest: app.manifest,
                     activity: app.manifest.activities.home,
                     path: app.path,
                     type: app.type
@@ -245,9 +249,17 @@ loadingScreen.setMessage('Parsing File...');
               handleSector(group);
               model.apps.apps = model.apps.apps.concat(model.apps.apps, group);
             }
-            view.requestActivity('DEFAULT_HOME', {
+            loadingScreen.setPercentage(70);
+            loadingScreen.setMessage('Starting Apps...');
+            view.requestChooser.request('DEFAULT_HOME', {
               exclusive: false
+            }, function(eligibleApp) {
+              controller.apps.open(eligibleApp.manifest.UID, 'home', false);
             });
+            setTimeout(function() {
+              loadingScreen.setPercentage(100);
+              loadingScreen.setMessage('Done!');
+            }, 100);
           });
         } else {
           this.loaded = true;
@@ -319,40 +331,45 @@ loadingScreen.setMessage('Parsing File...');
       }
     },
     activityMatch: function(activity, callback) {
-      var status = false;
+      var validApp;
+      var reAsk = false;
       var localPermissions = model.permissions;
       var savedPermissions = model.settings.config.permissions;
-      var compare = function(obj1, obj2, activity) {
-        obj1 = JSON.stringify(obj1[activity]);
-        obj2 = JSON.stringify(obj2[activity]);
-        return obj1 != obj2;
-      };
-      if (compare(localPermissions, savedPermissions, activity)) {
-        if (localPermissions[activity].length === 1) {
-          savedPermissions[activity] = localPermissions[activity];
-        } else {
-          status = true;
+      if (localPermissions[activity].length === 0) {
+        throw new Error('No app capable of opening ' + activity);
+      } else if (localPermissions[activity].length === 1) {
+        localPermissions[activity][0].default = true;
+        savedPermissions[activity] = localPermissions[activity];
+      } else {
+        reAsk = true;
+      }
+      var ii = localPermissions[activity].length;
+      for (let i = 0; i != ii; i++) {
+        if (localPermissions[activity][i].default) {
+          validApp = localPermissions[activity][i];
+          reAsk = false;
+          break;
         }
       }
-      model.settings.upload(callback.bind(this, status));
+      model.settings.upload(callback.bind(this, reAsk, validApp));
     }
   };
 
-  var view = {
+  view = {
     setStyle: function() {
       var CSSElem = document.createElement('link');
       CSSElem.type = 'text/css';
       CSSElem.rel = 'stylesheet';
       CSSElem.href = 'system/res/styles/framework.css';
       CSSElem.addEventListener('load', function() {
-        loadingScreen.setPercentage(10);
+        loadingScreen.setPercentage(30);
         loadingScreen.setMessage('Styles Loaded!');
         controller.apps.init();
       });
       document.head.appendChild(CSSElem);
     },
     init: function() {
-      loadingScreen.setPercentage(8);
+      loadingScreen.setPercentage(32);
       loadingScreen.setMessage('Initializing View...');
       this.setStyle();
       this.ribbonBar.init();
@@ -468,14 +485,21 @@ loadingScreen.setMessage('Parsing File...');
         view.hamburgerMenu.menu.appendChild(item);
       }
     },
-    requestActivity: function(activityName, options) {
-      controller.activityMatch(activityName, function(result) {
-        /*Display dialogue only when necessary*/
-        if (options.exclusive || result) {
-          console.log(activityName, options);
-        }
-      }.bind(this));
-    }
+    requestChooser: {
+      request: function(activityName, options, callback) {
+        controller.activityMatch(activityName, function(result, eligibleApp) {
+          if (options.exclusive || result) {
+            /*It's absolutely necessary to display the dialogue to switch apps*/
+            console.log('DISPLAY DIALOGUE');
+            callback();
+          } else {
+            callback(eligibleApp);
+          }
+        }.bind(this));
+      },
+      display: function(options) {
+      }
+    },
   };
 
   controller.init();

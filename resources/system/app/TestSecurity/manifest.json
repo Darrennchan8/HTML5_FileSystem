@@ -8,8 +8,5 @@
 		}
 	},
 	"permissions":[
-		"LIST_PACKAGES",
-		"LAUNCH_PACKAGES",
-		"PERSISTENT_HAMBURGER"
 	]
 }

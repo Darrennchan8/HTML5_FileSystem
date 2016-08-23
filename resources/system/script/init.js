@@ -81,11 +81,11 @@
       {
         title: 'Preparing FileSystem...',
         uri: 'system/script/fileSystem.js',
-        weight: 1
+        weight: 2
       }, {
         title: 'Starting UI...',
         uri: 'system/script/app-framework.js',
-        weight: 9
+        weight: 6
       }
     ],
     enchanceScripts: function() {
