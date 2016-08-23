@@ -33,107 +33,103 @@ loadingScreen.setMessage('Parsing File...');
       return this.base + 'system/res/drawable' + ico;
     },
     history: [],
-    getAllowedMethods: function() {
-      var objects = [this.allowedMethods.user];
-      var targets = [this.allowedMethods.system];
-      for (let i = 0; i != objects.length; i++) {
-        var user = Object.keys(objects[i]);
-        while (user.length !== 0) {
-          let currentPermission = user.shift();
-          if (targets[i][currentPermission]) {
-            if (typeof objects[i][currentPermission] == 'object') {
-              objects.push(objects[i][currentPermission]);
-              targets.push(targets[i][currentPermission]);
-            } else if (!targets[i][currentPermission]) {
+    apps: {
+      getAllowedMethods: function() {
+        var objects = [model.allowedMethods.user];
+        var targets = [model.allowedMethods.system];
+        for (let i = 0; i != objects.length; i++) {
+          var user = Object.keys(objects[i]);
+          while (user.length !== 0) {
+            let currentPermission = user.shift();
+            if (targets[i][currentPermission]) {
+              if (typeof objects[i][currentPermission] == 'object') {
+                objects.push(objects[i][currentPermission]);
+                targets.push(targets[i][currentPermission]);
+              } else if (!targets[i][currentPermission]) {
+                targets[i][currentPermission] = objects[i][currentPermission];
+              }
+            } else {
               targets[i][currentPermission] = objects[i][currentPermission];
             }
-          } else {
-            targets[i][currentPermission] = objects[i][currentPermission];
           }
         }
-      }
-      return this.allowedMethods;
-    },
-    getApps: function(callback) {
-      fs.scandir({
-        path: '/system/app/',
-        callback: function(callback, dirContents) {
-          var apps = {
-            system: [],
-            user: []
-          };
-          let userQueue = function(apps, manifests) {
-            loadingScreen.setPercentage(16);
-            loadingScreen.setMessage('Queueing User Apps...');
-            for (let i = 0, ii = apps.length; i != ii; i++) {
-              apps[i].manifest = manifests[i];
-            }
-            fs.scandir({
-              path: '/data/app/',
-              callback: function(apps, callback, dirContents) {
-                var ii = dirContents.folders.length;
-                for (let i = 0; i != ii; i++) {
-                  apps.user.push({
-                    path: dirContents.folders[i].fullPath + '/',
-                    type: 'user'
-                  });
-                  model.getManifest(apps.user.path, function(apps, manifests) {
-                    for (let i = 0, ii = apps.length; i != ii; i++) {
-                      apps[i].manifest = manifests[i];
-                    }
-                    callback(apps);
-                  }.bind(this, apps.user));
-                }
-                if (ii == 0) {
-                  callback(apps);
-                }
-              }.bind(this, apps, callback)
-            });
-          }.bind(this, apps.system);
-          var ii = dirContents.folders.length;
+        return this.allowedMethods;
+      },
+      organizeManifests: function(input, target, callback) {
+        var ii = input.folders.length;
+        var paths = [];
+        if (ii) {
           for (let i = 0; i != ii; i++) {
-            apps.system.push({
-              path: dirContents.folders[i].fullPath + '/',
+            target.push({
+              path: input.folders[i].fullPath + '/',
               type: 'system'
             });
-            model.getManifest(apps.system[i].path, userQueue);
+            paths.push(input.folders[i].fullPath);
           }
-          if (ii = 0) {
-            userQueue();
-          }
-        }.bind(this, callback)
-      });
-    },
-    getManifest: function(apps, callback) {
-      var xhr = [];
-      var results = [];
-      if (!Array.isArray(apps)) {
-        apps = [apps];
-      }
-      var index = 0;
-      for (let i = 0, ii = apps.length; i != ii; i++) {
-        results[i] = {};
-        xhr[i] = new XMLHttpRequest();
-        xhr[i].open('GET', apps[i] + 'manifest.json', true);
-        xhr[i].addEventListener('load', function(maxlength, current) {
-          try {
-            results[current] = JSON.parse(xhr[current].responseText);
-          } catch (err) {
-            console.error(err);
-            console.error('Invalid Manifest file for ' + apps[current]);
-          }
-          if (maxlength == ++index) {
-            callback(results);
-          }
-        }.bind(this, ii, i));
-        xhr[i].addEventListener('error', function(maxlength, current) {
-          console.error('Manifest file missing for ' + apps[current]);
-          if (maxlength == ++index) {
-            callback(results);
-          }
-        }.bind(this, ii, i));
-        xhr[i].send();
-      }
+          model.apps.getManifests(paths, function(results) {
+            for (let i = 0, ii = target.length; i != ii; i++) {
+              target[i].manifest = results[i];
+            }
+            callback();
+          }.bind(this));
+        } else {
+          callback([]);
+        }
+      },
+      getManifests: function(apps, callback) {
+        var xhr = [];
+        var results = [];
+        if (!Array.isArray(apps)) {
+          apps = [apps];
+        }
+        var index = 0;
+        for (let i = 0, ii = apps.length; i != ii; i++) {
+          results[i] = {};
+          xhr[i] = new XMLHttpRequest();
+          xhr[i].open('GET', apps[i] + '/manifest.json', true);
+          xhr[i].addEventListener('load', function(maxlength, current) {
+            try {
+              results[current] = JSON.parse(xhr[current].responseText);
+            } catch (err) {
+              console.error(err);
+              console.error('Invalid Manifest file for ' + apps[current]);
+            }
+            if (maxlength == ++index) {
+              callback(results);
+            }
+          }.bind(this, ii, i));
+          xhr[i].addEventListener('error', function(maxlength, current) {
+            console.error('Manifest file missing for ' + apps[current]);
+            if (maxlength == ++index) {
+              callback(results);
+            }
+          }.bind(this, ii, i));
+          xhr[i].send();
+        }
+      },
+      getAll: function(callback) {
+        var apps = {
+          system: [],
+          user: []
+        };
+        fs.scandir({
+          path: '/system/app/',
+          callback: function(dirContents) {
+            model.apps.organizeManifests(dirContents, apps.system, function() {
+              fs.scandir({
+                path: '/data/app/',
+                callback: function(dirContents) {
+                  model.apps.organizeManifests(dirContents, apps.user,
+                  function() {
+                    callback(apps);
+                  }.bind(this));
+                }.bind(this)
+              });
+            }.bind(this));
+          }.bind(this)
+        });
+      },
+      apps: []
     },
     settings: {
       load: function(callback) {
@@ -173,7 +169,7 @@ loadingScreen.setMessage('Parsing File...');
       model.init();
       view.init();
       window.allowedMethods = {};
-      Object.assign(window.allowedMethods, model.getAllowedMethods());
+      Object.assign(window.allowedMethods, model.apps.getAllowedMethods());
       Object.freeze(window.allowedMethods);
       model.settings.load(function() {
         this.apps.init();
@@ -194,15 +190,13 @@ loadingScreen.setMessage('Parsing File...');
     getHistory: function(UID) {
       return model.history;
     },
-    open: function(packageName, activity) {
-    },
     apps: {
       init: function() {
         /*Runs after all styles are loaded and configuration data is loaded*/
         if (this.loaded) {
           loadingScreen.setPercentage(13);
           loadingScreen.setMessage('Querying Apps...');
-          model.getApps(function(apps) {
+          model.apps.getAll(function(apps) {
             loadingScreen.setPercentage(20);
             loadingScreen.setMessage('Processing Permissions...');
             var allPermissions = {
@@ -222,29 +216,35 @@ loadingScreen.setMessage('Parsing File...');
                 }
               }
             };
-            for (let i = 0, ii = apps.length; i != ii; i++) {
-              try {
-                if (apps[i].manifest.activities.main) {
-                  view.hamburgerMenu.add(apps[i]);
-                } else {
-                  console.warn('Missing Main activity');
-                }
-                let iindex = apps[i].manifest.permissions.length;
-                for (let index = 0; index != iindex; index++) {
-                  let permissionName = apps[i].manifest.permissions[index];
-                  if (allPermissions[permissionName]) {
-                    allPermissions[permissionName](apps[i]);
+            var handleSector = function(apps) {
+              for (let i = 0, ii = apps.length; i != ii; i++) {
+                try {
+                  if (apps[i].manifest.activities.main) {
+                    view.hamburgerMenu.add(apps[i]);
                   } else {
-                    console.warn('Unrecognized or unneccessary permission: ',
-                      permissionName);
+                    console.warn('Missing Main activity');
                   }
+                  let iindex = apps[i].manifest.permissions.length;
+                  for (let index = 0; index != iindex; index++) {
+                    let permissionName = apps[i].manifest.permissions[index];
+                    if (allPermissions[permissionName]) {
+                      allPermissions[permissionName](apps[i]);
+                    } else {
+                      console.warn('Unrecognized or unneccessary permission: ',
+                        permissionName);
+                    }
+                  }
+                } catch (err) {
+                  console.error('Invalid Manifest Configuration.',
+                    'No activities will be added.', err);
                 }
-              } catch (err) {
-                console.error('Invalid Manifest Configuration.',
-                  'No activities will be added.', err);
               }
+            };
+            for (let i in apps) {
+              let group = apps[i];
+              handleSector(group);
+              model.apps.apps = model.apps.apps.concat(model.apps.apps, group);
             }
-            model.apps = apps;
             view.requestActivity('DEFAULT_HOME', {
               exclusive: false
             });
@@ -253,6 +253,70 @@ loadingScreen.setMessage('Parsing File...');
           this.loaded = true;
         }
       },
+      launch: function(app) {
+        if (app.manifest.activities && app.manifest.activities.main) {
+          controller.apps.open(app.manifest.UID, 'main', false);
+        } else {
+          console.warn('No main Activity found, can\'t launch.');
+        }
+      },
+      open: function(appUID, activity, background) {
+        var appLength = model.apps.apps.length;
+        for (let i = 0; i != appLength; i++) {
+          // All Apps List
+          if (model.apps.apps[i].manifest.UID == appUID) {
+            let app = model.apps.apps[i];
+            if (app.manifest.activities[activity]) {
+              let sandbox = 'allow-forms allow-pointer-lock allow-scripts';
+              if (background) {
+                if (!app.running) {
+                  app.running = 'background';
+                  app.frame = document.createElement('iframe');
+                  app.frame.setAttribute('sandbox', sandbox);
+                  app.frame.src = app.path;
+                  app.frame.src += app.manifest.activities[activity].path;
+                  view.iframeContainer.appendChild(app.frame);
+                }
+              } else {
+                let iindex = model.apps.apps.length;
+                for (let index = 0; index != iindex; index++) {
+                  controller.apps.close(model.apps.apps[index], false);
+                  model.apps.apps[index].menuEntry.className = 'hamburgerItem';
+                }
+                app.menuEntry.className = 'hamburgerItem active';
+                if (!app.running) {
+                  app.running = 'foreground';
+                  app.frame = document.createElement('iframe');
+                  app.frame.setAttribute('sandbox', sandbox);
+                  app.frame.src = app.path;
+                  app.frame.src += app.manifest.activities[activity].path;
+                  view.iframeContainer.appendChild(app.frame);
+                } else {
+                  if (app.running == 'background') {
+                    app.frame.style.display = 'block';
+                    app.running = 'foreground';
+                  }
+                }
+              }
+            } else {
+              console.warn('No matching activity found for' + activity);
+            }
+          }
+        }
+      },
+      close: function(appObj, forceStop) {
+        if (forceStop) {
+          if (appObj.frame) {
+            view.iframeContainer.removeChild(appObj.frame);
+            appObj.running = false;
+          }
+        } else {
+          if (appObj.frame) {
+            appObj.frame.style.display = 'none';
+            appObj.running = 'background';
+          }
+        }
+      }
     },
     activityMatch: function(activity, callback) {
       var status = false;
@@ -376,7 +440,6 @@ loadingScreen.setMessage('Parsing File...');
         }
       },
       add: function(options) {
-        console.log('ADD HAMBURGER: ', options);
         var item = document.createElement('div');
         item.className = 'hamburgerItem';
         var itemIco = document.createElement('img');
@@ -387,9 +450,21 @@ loadingScreen.setMessage('Parsing File...');
         item.appendChild(itemTitle);
         options.menuEntry = item;
         item.addEventListener('click', function(appDetails) {
-          controller.activate(appDetails);
-          appDetails.menuEntry.className = 'hamburgerItem active';
+          if (appDetails.running == 'foreground') {
+            if (view.hamburgerMenu.isOpen) {
+              view.hamburgerMenu.toggle();
+            }
+          } else {
+            controller.apps.launch(appDetails);
+          }
         }.bind(this, options));
+        item.addEventListener('transitionend', function() {
+          setTimeout(function() {
+            if (view.hamburgerMenu.isOpen) {
+              view.hamburgerMenu.toggle();
+            }
+          }.bind(this), 20);
+        });
         view.hamburgerMenu.menu.appendChild(item);
       }
     },

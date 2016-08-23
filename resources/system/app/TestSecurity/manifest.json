@@ -1,0 +1,15 @@
+{
+	"UID":"stock_exploit",
+	"name":"Test Security",
+	"activities":{
+		"main": {
+			"ico":"/res/favExploit.svg",
+			"path":"/index.html"
+		}
+	},
+	"permissions":[
+		"LIST_PACKAGES",
+		"LAUNCH_PACKAGES",
+		"PERSISTENT_HAMBURGER"
+	]
+}

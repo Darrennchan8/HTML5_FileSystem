@@ -138,19 +138,22 @@ body {
   overflow: hidden;
   vertical-align: middle;
   display: flex;
-  margin: 0;
-  padding: 2vmax;
-  padding-top: 1vmax;
-  padding-bottom: 1vmax;
+  margin: 2vmax;
+  margin-top: 1vmax;
+  margin-bottom: 1vmax;
   border-radius: 0vmax;
   font-weight: bold;
   color: rgba(0,0,0,.35);
-  -webkit-transition: padding .1s linear, margin .1s linear, border-radius .1s ease-in-out .1s, background-color .1s ease-in-out, color .1s ease-in-out;
+  -webkit-transition: border-radius .1s ease-in-out .1s, background-color .1s ease-in-out, color .1s ease-in-out;
 }
 .hamburgerItem img {
   margin-top: auto;
   margin-left: 2vw;
   margin-bottom: auto;
+  max-width: 4.5vmax;
+  max-height: 4.5vmax;
+  width: 4.5vmax;
+  height: 4.5vmax;
 }
 .hamburgerItem p {
   margin-top: auto;
@@ -162,12 +165,8 @@ body {
   overflow: hidden;
 }
 .hamburgerItem.active {
-  background-color: rgba(0,0,0,.03);
+  background-color: rgba(0,0,0,.04);
   color: rgba(0,0,0,.9);
-  padding: 0;
-  margin: 2vmax;
-  margin-top: 1vmax;
-  margin-bottom: 1vmax;
   border-radius: 1vmax;
 }
 .menuOpened {
@@ -202,7 +201,7 @@ body {
   left: 0;
   position: fixed;
   overflow: hidden;
-  padding-top: 6vmax;
+  margin-top: 6vmax;
 }
 .iframeContainer * {
   width: 100%;
