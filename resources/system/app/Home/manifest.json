@@ -3,12 +3,12 @@
 	"name":"Home",
 	"activities":{
 		"main": {
-			"ico":"/res/favicon.ico",
+			"ico":"/res/drawable/favicon.ico",
 			"path":"/index.html"
 		},
 		"home": {
 			"name":"Home",
-			"ico":"/res/favicon.ico",
+			"ico":"/res/drawable/favicon.ico",
 			"path":"/index.html"
 		}
 	},

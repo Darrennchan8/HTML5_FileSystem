@@ -279,7 +279,7 @@ loadingScreen.setMessage('Parsing File...');
           if (model.apps.apps[i].manifest.UID == appUID) {
             let app = model.apps.apps[i];
             if (app.manifest.activities[activity]) {
-              let sandbox = 'allow-forms allow-pointer-lock allow-scripts';
+              let sandbox = 'allow-forms allow-pointer-lock allow-scripts allow-same-origin';
               if (background) {
                 if (!app.running) {
                   app.running = 'background';
