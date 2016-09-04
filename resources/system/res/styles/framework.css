@@ -133,8 +133,8 @@ body {
 }
 .hamburgerItem {
   cursor: pointer;
-  height: 5vh;
-  max-height: 5vh;
+  height: 5vmax;
+  max-height: 5vmax;
   overflow: hidden;
   vertical-align: middle;
   display: flex;
