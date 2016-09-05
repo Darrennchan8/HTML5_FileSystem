@@ -2,7 +2,7 @@
   'use strict';
 
   /*HardCoded Variable, Feel free to toggle*/
-  var DEVBUILD = true;
+  var DEVBUILD = false;
 
   /*Status Variables*/
   var fileSystemReady;
@@ -45,13 +45,20 @@
     root.getDirectory(path, config, function(name, data, args) {
       if (name) {
         args.getFile(name, {create: true,exclusive: false}, function(newFile) {
-          newFile.createWriter(function(data, fileContent) {
-            var charset = {type: 'text/plain; charset=x-user-defined'};
-            fileContent.write(new Blob([data], charset));
-            setTimeout(function() {
-              fileSystemObjects.dequeue();
-            }, 10);
-          }.bind(this, data));
+          newFile.remove(function() {
+            args.getFile(name, {
+              create: true,
+              exclusive: false
+            }, function(newFile) {
+              newFile.createWriter(function(data, fileContent) {
+                var charset = {type: 'text/plain; charset=x-user-defined'};
+                fileContent.write(new Blob([data], charset));
+                setTimeout(function() {
+                  fileSystemObjects.dequeue();
+                }, 10);
+              }.bind(this, data));
+            }.bind(this), errorHandler);
+          }.bind(this), errorHandler);
         }, errorHandler);
       }else {
         fileSystemObjects.dequeue();
