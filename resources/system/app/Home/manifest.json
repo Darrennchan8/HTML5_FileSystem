@@ -1,5 +1,6 @@
 {
 	"UID":"stock_home_system",
+	"ico":"/res/drawable/favicon.ico",
 	"name":"Home",
 	"activities":{
 		"main": {
