@@ -1,3 +1,4 @@
+/*Global Styles*/
 @font-face {
   font-family: 'Roboto';
   font-style: normal;
@@ -5,19 +6,115 @@
   src:url('//system/fonts/roboto.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
-body {
-  font-family: 'Roboto', sans-serif;
-  /*Disables Highlighting*/
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  /*Disables Dragging*/
-  -webkit-user-drag: none;
+* {
   -khtml-user-drag: none;
   -moz-user-drag: none;
+  -webkit-user-drag: none;
   -o-user-drag: none;
+}
+body {
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
   background: #eeeded;
+  font-family: 'Roboto', sans-serif;
   margin: 0;
+  user-select: none;
+}
+.centerVertical {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/*Global Card Styles*/
+::-webkit-scrollbar {
+  width: 1vw;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, .2);
+}
+::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, .1);
+}
+.cardSection {
+  background-color: white;
+  border-radius: 1.5vmax;
+  cursor: default;
+  margin: 2vh 1vw 2vh 1vw;
+  max-width: 29vw;
+  min-height: 25vh;
+  overflow-x: hidden;
+  padding-bottom: 1.5vh;
+  padding-top: 1.5vh;
+  position: absolute;
+  width: 27vw;
+}
+.cardSection .sectionHeader {
+  border-bottom: rgba(0, 0, 0, .1) solid 1px;
+  padding-bottom: 1vh;
+}
+.cardSection .sectionHeader p {
+  font-weight: bold;
+  margin: 0;
+  margin-left: 2vw;
+  text-transform: capitalize;
+}
+.cardSection .sectionHeader div {
+  margin: 0;
+  margin-right: 2vw;
+  padding-right: 1vw;
+  text-transform: capitalize;
+}
+.cardSection .body {
+  margin-left: 2vw;
+  margin-right: 2vw;
+  margin-top: 1.5vh;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+.cardSection .loading {
+  margin-top: 0;
+}
+
+/*App Card Styles*/
+.appListItem {
+  border-bottom: rgba(0, 0, 0, 0.1) solid 1px;
+  height: 6vh;
+  max-height: 6vh;
+  overflow: hidden;
+  display: flex;
+}
+.appListItem .centerVertical .icoContainer {
+  height: 5vh;
+  width: 5vh;
+  max-width: 5vh;
+  max-height: 5vh;
+  position: relative;
+}
+.appListItem .centerVertical .icoContainer img{
+  height: 5vh;
+  width: 5vh;
+  max-width: 5vh;
+  max-height: 5vh;
+  position: absolute;
+}
+.appListItem .centerVertical .icoContainer img.launchable {
+  opacity: 1;
+  transition: opacity .35s ease-in-out;
+}
+.appListItem .centerVertical .icoContainer:hover img.launchable {
+  opacity: 0;
+}
+.appListItem .centerVertical .icoContainer img.launchIco {
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .35s ease-in-out;
+}
+.appListItem .centerVertical .icoContainer:hover img.launchIco {
+  opacity: 1;
+}
+.appListItem .centerVertical p {
+  padding-left: 2vw;
 }
