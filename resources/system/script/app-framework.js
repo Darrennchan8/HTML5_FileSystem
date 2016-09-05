@@ -218,6 +218,37 @@ loadingScreen.setMessage('Parsing File...');
                 } catch (err) {
                   console.error('Invalid home configuration.', err);
                 }
+              },
+              'LIST_PACKAGES': function(app) {
+                window.addEventListener('message', function(msg) {
+                  if (msg.data != 'LIST_PACKAGES') {
+                    return;
+                  }
+                  var origin = msg.source.location.pathname.split('/');
+                  var appType = origin[0];
+                  var appName = origin[3];
+                  var app;
+                  for (let i = model.apps.apps.length - 1; i >= 0; i--) {
+                    let currPath = model.apps.apps[i].path.split('/');
+                    if (appName == currPath[3] && appType == currPath[0]) {
+                      app = model.apps.apps[i];
+                    }
+                  }
+                  if (app) {
+                    if (app.manifest.permissions.includes('LIST_PACKAGES')) {
+                      model.apps.getAll(function(apps) {
+                        msg.source.postMessage({
+                          request: 'LIST_PACKAGES',
+                          data: apps
+                        }, '*');
+                      }.bind(this));
+                    } else {
+                      msg.source.postMessage(new Error('"LIST_PACKAGES" not in manifest permissions.'), '*');
+                    }
+                  } else {
+                    msg.source.postMessage(new Error('Invalid Origin: ' + msg.source.location.pathname), '*');
+                  }
+                }, false);
               }
             };
             var handleSector = function(apps) {
