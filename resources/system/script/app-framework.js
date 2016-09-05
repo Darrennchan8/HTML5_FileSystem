@@ -249,6 +249,37 @@ loadingScreen.setMessage('Parsing File...');
                     msg.source.postMessage(new Error('Invalid Origin: ' + msg.source.location.pathname), '*');
                   }
                 }, false);
+              },
+              'LAUNCH_PACKAGES': function(app) {
+                window.addEventListener('message', function(msg) {
+                  if (msg.data.request != 'LAUNCH_PACKAGES') {
+                    return;
+                  }
+                  var origin = msg.source.location.pathname.split('/');
+                  var appType = origin[0];
+                  var appName = origin[3];
+                  var app;
+                  for (let i = model.apps.apps.length - 1; i >= 0; i--) {
+                    let currPath = model.apps.apps[i].path.split('/');
+                    if (appName == currPath[3] && appType == currPath[0]) {
+                      app = model.apps.apps[i];
+                    }
+                  }
+                  if (app) {
+                    if (app.manifest.permissions.includes('LAUNCH_PACKAGES')) {
+                      msg.data.data.background = !!msg.data.data.background;
+                      let result = controller.apps.open(msg.data.data.UID, msg.data.data.activity, msg.data.data.background);
+                      msg.source.postMessage({
+                        request: 'LAUNCH_PACKAGES',
+                        data: result
+                      }, '*');
+                    } else {
+                      msg.source.postMessage(new Error('"LAUNCH_PACKAGES" not in manifest permissions.'), '*');
+                    }
+                  } else {
+                    msg.source.postMessage(new Error('Invalid Origin: ' + msg.source.location.pathname), '*');
+                  }
+                }, false);
               }
             };
             var handleSector = function(apps) {
@@ -341,8 +372,10 @@ loadingScreen.setMessage('Parsing File...');
                   }
                 }
               }
+              return true;
             } else {
               console.warn('No matching activity found for' + activity);
+              return false;
             }
           }
         }
