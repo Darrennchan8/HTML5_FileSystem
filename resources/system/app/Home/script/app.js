@@ -40,7 +40,6 @@
         controller.init.appList(apps);
       },
       'LAUNCH_PACKAGES': function(status) {
-        console.log(status);
       }
     },
     apps: {
