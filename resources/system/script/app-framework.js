@@ -221,7 +221,7 @@ loadingScreen.setMessage('Parsing File...');
               },
               'LIST_PACKAGES': function(app) {
                 window.addEventListener('message', function(msg) {
-                  if (msg.data != 'LIST_PACKAGES') {
+                  if (msg.data.request != 'LIST_PACKAGES') {
                     return;
                   }
                   var origin = msg.source.location.pathname.split('/');
