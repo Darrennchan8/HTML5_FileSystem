@@ -26,7 +26,7 @@ loadingScreen.setMessage('Parsing File...');
           hamburgerMenu: {
           },
           setFavicon: null,
-          setTitle: null
+          setTitle: null,
         }
       };
       loadingScreen.setPercentage(9);
@@ -220,6 +220,10 @@ loadingScreen.setMessage('Parsing File...');
                 }
               },
               'LIST_PACKAGES': function(app) {
+                if (this._LIST_PACKAGES) {
+                  return;
+                }
+                this._LIST_PACKAGES = true;
                 window.addEventListener('message', function(msg) {
                   if (msg.data.request != 'LIST_PACKAGES') {
                     return;
@@ -251,6 +255,10 @@ loadingScreen.setMessage('Parsing File...');
                 }, false);
               },
               'LAUNCH_PACKAGES': function(app) {
+                if (this._LAUNCH_PACKAGES) {
+                  return;
+                }
+                this._LAUNCH_PACKAGES = true;
                 window.addEventListener('message', function(msg) {
                   if (msg.data.request != 'LAUNCH_PACKAGES') {
                     return;
