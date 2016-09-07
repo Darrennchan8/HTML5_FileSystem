@@ -448,6 +448,7 @@ loadingScreen.setMessage('Parsing File...');
       this.hamburgerMenu.init();
       view.overlay = document.createElement('div');
       view.overlay.className = 'overlay o_deactivated';
+      view.overlay.style.display = 'none';
       view.overlay.addEventListener('click', function(event) {
         view.hamburgerMenu.isOpen = true;
         view.hamburgerMenu.toggle();
