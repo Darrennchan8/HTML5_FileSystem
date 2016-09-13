@@ -1,8 +1,11 @@
 (function() {
   'use strict';
 
-  /*HardCoded Variable, Feel free to toggle*/
-  var DEVBUILD = false;
+  /*HardCoded Variable, Feel free to change*/
+  var domain = 'darrennchan8.eu.pn';
+
+  /*AutoConfig*/
+  var DEVBUILD = window.DEVBUILD !== false;
 
   /*Status Variables*/
   var fileSystemReady;
@@ -26,7 +29,7 @@
     var dataPath = '../public/resources.json';
   } else {
     var exclusions = ['data','storage'];
-    var dataPath = 'https://updater-162a0.firebaseapp.com/resources.json';
+    var dataPath = '//' + domain + '/resources.json';
   }
 
   errorHandler = function(err) {

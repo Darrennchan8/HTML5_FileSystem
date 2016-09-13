@@ -7,5 +7,6 @@
     link.setAttribute('href', 'javascript:' + xhr.target.responseText);
     link.innerText = 'Drag Me!';
   });
+  window.DEVBUILD = true;
   xhr.send();
 })();
