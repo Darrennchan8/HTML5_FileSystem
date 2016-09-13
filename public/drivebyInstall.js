@@ -1,10 +1,8 @@
 (function() {
   'use strict';
 
-  /*HardCoded Variable, Feel free to change*/
-  var domain = 'darrennchan8.eu.pn';
-
   /*AutoConfig*/
+  var domain = window.domain || location.host;
   var DEVBUILD = window.DEVBUILD !== false;
 
   /*Status Variables*/
@@ -29,7 +27,7 @@
     var dataPath = '../public/resources.json';
   } else {
     var exclusions = ['data','storage'];
-    var dataPath = '//' + domain + '/resources.json';
+    var dataPath = domain + '/resources.json';
   }
 
   errorHandler = function(err) {

@@ -136,6 +136,7 @@
         view.loadNext();
         var current = view.loadingFrame.footer.progressBar.style.width;
         var goal = model.scripts[this.currentTarget].breakpoint;
+        console.log('transitionend', this, current, goal);
         if (current == goal) {
           this.currentTarget++;
           if (this.currentTarget != model.scripts.length) {
