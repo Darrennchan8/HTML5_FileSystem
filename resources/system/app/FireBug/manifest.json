@@ -1,0 +1,13 @@
+{
+	"UID":"stock_firebug_inspector",
+	"name":"FireBug",
+	"ico":"res/drawable/favico.svg",
+	"activities":{
+		"main": {
+			"ico":"res/drawable/favico.svg",
+			"path":"index.html"
+		}
+	},
+	"permissions":[
+	]
+}
